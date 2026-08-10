@@ -3,6 +3,69 @@ entries:
   onyx:
   - annotations:
       artifacthub.io/changes: |
+        - kind: fixed
+          description: Route /scim to the api server in ingress mode (ingress.enabled=true).
+            The ingress templates only routed /api to the api server, so SCIM requests fell
+            through to the webserver and returned an HTML 404. A new ingress-scim.yaml
+            template forwards the /scim prefix, without a rewrite, to the api service on
+            the webserver host.
+      category: Productivity
+      images: |
+        - name: webserver
+          image: docker.io/onyxdotapp/onyx-web-server:latest
+        - name: background
+          image: docker.io/onyxdotapp/onyx-backend:latest
+      licenses: MIT
+    apiVersion: v2
+    appVersion: latest
+    created: "2026-08-10T23:06:22.945733204Z"
+    dependencies:
+    - alias: postgresql
+      condition: postgresqlOperator.enabled,postgresql.enabled
+      name: cloudnative-pg
+      repository: https://cloudnative-pg.github.io/charts
+      version: 0.26.0
+    - condition: postgresql.installCRDs,postgresqlOperator.enabled,postgresql.enabled
+      name: onyx-cnpg-crds
+      repository: file://../onyx-cnpg-crds
+      version: 0.1.0
+    - condition: opensearch.enabled
+      name: opensearch
+      repository: https://opensearch-project.github.io/helm-charts
+      version: 3.6.0
+    - alias: nginx
+      condition: nginx.enabled
+      name: ingress-nginx
+      repository: https://kubernetes.github.io/ingress-nginx
+      version: 4.13.3
+    - condition: redisOperator.enabled,redis.enabled
+      name: redis-operator
+      repository: https://ot-container-kit.github.io/helm-charts
+      version: 0.24.0
+    - condition: redis.enabled
+      name: redis
+      repository: https://ot-container-kit.github.io/helm-charts
+      version: 0.16.6
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io/
+      version: 5.4.0
+    - condition: codeInterpreter.enabled
+      name: code-interpreter
+      repository: https://onyx-dot-app.github.io/python-sandbox/
+      version: 0.4.3
+    description: Onyx application and Craft sandbox deployment chart
+    digest: 6d0f036fcc94ddb68bcdbbf1e2217c091a250c22089330f6b7aefe66cf3787cb
+    home: https://www.onyx.app/
+    name: onyx
+    sources:
+    - https://github.com/onyx-dot-app/onyx
+    type: application
+    urls:
+    - https://winnyschuster.github.io/onyx/onyx-0.8.13.tgz
+    version: 0.8.13
+  - annotations:
+      artifacthub.io/changes: |
         - kind: changed
           description: Documented that every Onyx image now publishes a -dev twin for each
             of its tags, so a -dev suffixed global.version (e.g. v1.2.3-dev) selects the dev
@@ -5192,7 +5255,7 @@ entries:
     version: 0.3.1
   onyx-cnpg-crds:
   - apiVersion: v2
-    created: "2026-07-28T22:27:44.178083488Z"
+    created: "2026-08-10T23:06:22.949750114Z"
     description: 'CloudNativePG CRDs for the Onyx chart, isolated in a CRDs-only subchart
       so they can be toggled via the parent''s postgresql.installCRDs value. Helm
       still gives crds/ its special pre-install treatment (applied before the main
@@ -5200,7 +5263,7 @@ entries:
       validation on a fresh install. Keep crds/cnpg-crds.yaml in byte-for-byte sync
       with the cloudnative-pg subchart pinned in the parent Chart.yaml (verified by
       onyx/scripts/check-cnpg-crds.sh). '
-    digest: ab38e3db716fa3a46aa0da9240912666614d705bd1921985da69b61ee5041c05
+    digest: 4d862792e2b97260e02530be4ebba812730e3bc233664baeb1179e9dd9982dd8
     name: onyx-cnpg-crds
     type: application
     urls:
@@ -5694,4 +5757,4 @@ entries:
     urls:
     - https://github.com/onyx-dot-app/onyx/releases/download/onyx-stack-0.2.4/onyx-stack-0.2.4.tgz
     version: 0.2.4
-generated: "2026-07-28T22:27:44.144148065Z"
+generated: "2026-08-10T23:06:22.917042389Z"
